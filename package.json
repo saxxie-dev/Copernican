@@ -3,19 +3,26 @@
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
+    "rescript-clean": "bsb -clean-world",
+    "rescript-watch": "rescript build -w",
+    "rescript-build": "rescript",
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web"
   },
   "dependencies": {
+    "@rescript/react": "^0.11.0",
     "expo": "~48.0.11",
     "expo-status-bar": "~1.4.4",
     "react": "18.2.0",
-    "react-native": "0.71.6"
+    "react-native": "0.71.6",
+    "rescript-react-native": "^0.71.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "bs-platform": "^9.0.2",
+    "rescript": "^10.1.4"
   },
   "private": true
 }
