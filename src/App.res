@@ -2,11 +2,7 @@
  * Sample React Native App
  * https://github.com/facebook/react-native
  */
-open // Converted from
-// https://github.com/facebook/react-native/blob/0.64-stable/template/App.js
-// With a few tweaks
-
-ReactNative
+open ReactNative
 
 include ReactNativeHelloWorldUtils
 
@@ -64,47 +60,117 @@ module Section = {
   }
 }
 
+type appMode = [#helloworld | #orrery]
 @react.component
 let app = () => {
   let isDarkMode = useIsDarkMode()
-  <SafeAreaView>
-    <StatusBar barStyle={isDarkMode ? #"dark-content" : #"light-content"} />
-    <ScrollView
-      contentInsetAdjustmentBehavior=#automatic
-      style={
-        open Style
-        viewStyle(~backgroundColor=isDarkMode ? colors.darker : colors.lighter, ())
-      }>
-      <Header />
-      <Section title={"Hiya"}>
-        {"Edit "->React.string}
-        <Text style={styles["highlight"]}> {"src/App.re"->React.string} </Text>
-        {" to change this screen and then come back to see your edits."->React.string}
-      </Section>
-      <Section title={"See Your Changes"}>
-        <ReloadInstructions />
-      </Section>
-      <Section title={"Debug"}>
-        <DebugInstructions />
-      </Section>
-      <Section title={"Learn More"}>
-        {"Read the docs to discover what to do next:"->React.string}
-      </Section>
-      <Section title={"ReScript React Native"}>
-        {
-          let rrnUrl = "https://rescript-react-native.github.io/"
-          <TouchableOpacity onPress={_ => openURLInBrowser(rrnUrl)}>
-            <Text
-              style={
-                open Style
-                style(~marginTop=8.->dp, ~fontSize=18., ~fontWeight=#400, ~color=colors.primary, ())
-              }>
-              {rrnUrl->React.string}
-            </Text>
-          </TouchableOpacity>
-        }
-      </Section>
-      <LearnMoreLinks />
-    </ScrollView>
-  </SafeAreaView>
+  let (appMode: appMode, setAppMode) = React.useState(_ => #helloworld)
+  appMode == #orrery
+    ? <SafeAreaView
+        style={
+          open Style
+          Style.style(~backgroundColor="#102030", ~height=pct(100.), ())
+        }>
+        <TouchableOpacity onPress={_ => setAppMode(_ => #helloworld)}>
+          <Text
+            style={
+              open Style
+              style(~marginTop=8.->dp, ~fontSize=18., ~fontWeight=#400, ~color=colors.primary, ())
+            }>
+            {"Go back"->React.string}
+          </Text>
+        </TouchableOpacity>
+        <View
+          style={
+            open Style
+            style(~aspectRatio=1.0, ())
+          }
+          pointerEvents={#"box-none"}>
+          {
+            open Orrery
+            <SolarSystem />
+          }
+        </View>
+      </SafeAreaView>
+    : <SafeAreaView>
+        <StatusBar barStyle={isDarkMode ? #"dark-content" : #"light-content"} />
+        <ScrollView
+          contentInsetAdjustmentBehavior=#automatic
+          style={
+            open Style
+            viewStyle(~backgroundColor=isDarkMode ? colors.darker : colors.lighter, ())
+          }>
+          <Header />
+          <Section title={"This app"}>
+            <TouchableOpacity onPress={_ => setAppMode(_ => #orrery)}>
+              <Text
+                style={
+                  open Style
+                  style(
+                    ~marginTop=8.->dp,
+                    ~fontSize=18.,
+                    ~fontWeight=#400,
+                    ~color=colors.primary,
+                    (),
+                  )
+                }>
+                {"Open orrery"->React.string}
+              </Text>
+            </TouchableOpacity>
+          </Section>
+          <Section title={"Hello world"}>
+            {
+              open ReactNativeSvg
+              open Style
+
+              <Svg height={dp(50.)} width={dp(50.)} viewBox="0 0 100 100">
+                <Circle
+                  cx={dp(50.)}
+                  cy={dp(50.)}
+                  r={dp(45.)}
+                  stroke="blue"
+                  strokeWidth={dp(2.5)}
+                  fill="green"
+                />
+                <Rect
+                  x={dp(15.)}
+                  y={dp(15.)}
+                  width={dp(70.)}
+                  height={dp(70.)}
+                  stroke="red"
+                  strokeWidth={dp(2.)}
+                  fill="yellow"
+                />
+              </Svg>
+            }
+          </Section>
+          <Section title={"See Your Changes"}>
+            <ReloadInstructions />
+          </Section>
+          <Section title={"Debug"}>
+            <DebugInstructions />
+          </Section>
+          <Section title={"ReScript React Native"}>
+            {
+              let rrnUrl = "https://rescript-react-native.github.io/"
+              <TouchableOpacity onPress={_ => openURLInBrowser(rrnUrl)}>
+                <Text
+                  style={
+                    open Style
+                    style(
+                      ~marginTop=8.->dp,
+                      ~fontSize=18.,
+                      ~fontWeight=#400,
+                      ~color=colors.primary,
+                      (),
+                    )
+                  }>
+                  {rrnUrl->React.string}
+                </Text>
+              </TouchableOpacity>
+            }
+          </Section>
+          <LearnMoreLinks />
+        </ScrollView>
+      </SafeAreaView>
 }

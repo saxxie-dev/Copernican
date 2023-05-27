@@ -12,11 +12,13 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@rescript-react-native/svg": "^12.1.9",
     "@rescript/react": "^0.11.0",
     "expo": "~48.0.11",
     "expo-status-bar": "~1.4.4",
     "react": "18.2.0",
     "react-native": "0.71.6",
+    "react-native-svg": "13.4.0",
     "rescript-react-native": "^0.71.1"
   },
   "devDependencies": {
