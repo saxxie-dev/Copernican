@@ -6,6 +6,7 @@
     "rescript-clean": "bsb -clean-world",
     "rescript-watch": "rescript build -w",
     "rescript-build": "rescript",
+    "rescript-test": "retest test/**/*.bs.js",
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
@@ -24,7 +25,8 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "bs-platform": "^9.0.2",
-    "rescript": "^10.1.4"
+    "rescript": "^10.1.4",
+    "rescript-test": "^4.0.0"
   },
   "private": true
 }
