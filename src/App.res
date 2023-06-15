@@ -65,6 +65,7 @@ type appMode = [#helloworld | #orrery]
 let app = () => {
   let isDarkMode = useIsDarkMode()
   let (appMode: appMode, setAppMode) = React.useState(_ => #helloworld)
+  let (time, setTime) = React.useState(_ => Js.Date.make()->Js.Date.getTime)
   appMode == #orrery
     ? <SafeAreaView
         style={
@@ -88,8 +89,19 @@ let app = () => {
           pointerEvents={#"box-none"}>
           {
             open Orrery
-            <SolarSystem />
+            <SolarSystem time={Js.Date.fromFloat(time)} /> //*. 1000. *. 60. *. 60. *. 24.
           }
+          <TextInput
+            onChangeText={v => {
+              setTime(_ => {
+                switch Belt.Float.fromString(v) {
+                | None => 0.
+                | Some(x) => x
+                }
+              })
+            }}
+            value={Belt.Float.toString(time)}
+          />
         </View>
       </SafeAreaView>
     : <SafeAreaView>

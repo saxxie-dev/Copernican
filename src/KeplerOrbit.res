@@ -95,7 +95,7 @@ let trueAngle = (orbit: orbitSpec, time: Js.Date.t) => {
   )
 }
 
-let truePostion = (orbit: orbitSpec, time: Js.Date.t): (float, float, float) => {
+let truePosition = (orbit: orbitSpec, time: Js.Date.t): (float, float, float) => {
   let r = trueRadius(orbit, time)
   let theta = trueAngle(orbit, time)
   let {inclination, ascendingNodeLongitude, periapsisAngle, epochAngle} = orbit
@@ -105,4 +105,9 @@ let truePostion = (orbit: orbitSpec, time: Js.Date.t): (float, float, float) => 
     r *. sin(theta +. omega_),
     r *. sin(periapsisAngle +. theta) *. inclination,
   )
+}
+
+let projectedAngle = (orbit: orbitSpec, time: Js.Date.t): float => {
+  let (x, y, _) = truePosition(orbit, time)
+  atan2(~y, ~x, ())
 }
