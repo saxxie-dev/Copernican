@@ -1,4 +1,8 @@
+// Lib for calculating orbits according to kepler's equations
+// Does not handle moons (yet)
+
 open! Js.Math
+open! Coordinates
 
 type orbitSpec = {
   // Ellipse shape
@@ -10,6 +14,21 @@ type orbitSpec = {
   periapsisAngle: float, // 0..2*PI
   // Orbit initial angle
   epochAngle: float,
+}
+
+// Todo: use these everywhere
+type hydratedOrbitSpec = {
+  semiMajor: float,
+  eccentricity: float,
+  // Elliptic plane + orientation
+  inclination: float, // 0..PI/2
+  ascendingNodeLongitude: float, // -PI..PI
+  periapsisAngle: float, // 0..2*PI
+  // Orbit initial angle
+  epochAngle: float,
+  orbitPeriod: float,
+  meanMotion: float,
+  sweepRate: float,
 }
 
 let _GM = 1.98847e30 *. 6.6743015e-11 /. 3.347927e+33
@@ -64,6 +83,7 @@ let radiusAtAphelion = (orbit: orbitSpec) => radiusAtTrueAnomaly(orbit, _PI)
 
 // Tries converging to an attractive fixed point.
 // Do not run on function with , obviously
+// TODO: pull out and generalize
 let rec approximateFixedPoint = (f: float => float, x: float): float => {
   let y = f(x)
   if y -. x < 1e-8 {
@@ -98,7 +118,7 @@ let trueAngle = (orbit: orbitSpec, time: Js.Date.t) => {
 let truePosition = (orbit: orbitSpec, time: Js.Date.t): (float, float, float) => {
   let r = trueRadius(orbit, time)
   let theta = trueAngle(orbit, time)
-  let {inclination, ascendingNodeLongitude, periapsisAngle, epochAngle} = orbit
+  let {inclination, ascendingNodeLongitude, periapsisAngle} = orbit
   let omega_ = ascendingNodeLongitude +. periapsisAngle
   (
     r *. cos(theta +. omega_),
@@ -107,7 +127,12 @@ let truePosition = (orbit: orbitSpec, time: Js.Date.t): (float, float, float) =>
   )
 }
 
-let projectedAngle = (orbit: orbitSpec, time: Js.Date.t): float => {
+let projectedPositionPolar = (orbit: orbitSpec, time: Js.Date.t): polarCoord => {
   let (x, y, _) = truePosition(orbit, time)
-  atan2(~y, ~x, ())
+  cartesianToPolar({x, y})
+}
+
+let projectedAngle = (orbit: orbitSpec, time: Js.Date.t): float => {
+  let {theta} = projectedPositionPolar(orbit, time)
+  theta
 }

@@ -1,10 +1,11 @@
 open ReactNativeSvg
 
 module Planet = {
-  open ReactNative.Style
-  open Js.Math
+  open! ReactNative.Style
+  open! Js.Math
   @react.component
   let make = (~radius: float, ~theta: float, ~id: string) => {
+    Js.Console.log3(radius, theta, id)
     let (pressed, setPressed) = React.useState(_ => false)
     <>
       {if radius > 0. {
@@ -59,8 +60,8 @@ let angles = (time: Js.Date.t) => {
 }
 
 module Earth = {
-  open ReactNative.Style
-  open Js.Math
+  open! ReactNative.Style
+  open! Js.Math
   @react.component
   let make = (~radius: float, ~theta: float, ~id: string, ~angles: array<float>) => {
     let (pressed, setPressed) = React.useState(_ => false)
@@ -101,7 +102,7 @@ module Earth = {
             x2={dp(radius *. cos(theta) +. 500. *. cos(theta2))}
             y2={dp(-.radius *. sin(theta) -. 500. *. sin(theta2))}
             strokeWidth={dp(1.)}
-            stroke="#FFF"
+            stroke="#5FF"
           />
         ),
       )}
@@ -114,15 +115,30 @@ module SolarSystem = {
 
   @react.component
   let make = (~time: Js.Date.t) => {
-    let earthAngle = KeplerOrbit.projectedAngle(PlanetData.PlanetMotions.earth, time)
-    let venusAngle = KeplerOrbit.projectedAngle(PlanetData.PlanetMotions.venus, time)
-    let mercuryAngle = KeplerOrbit.projectedAngle(PlanetData.PlanetMotions.mercury, time)
-    let marsAngle = KeplerOrbit.projectedAngle(PlanetData.PlanetMotions.mars, time)
+    let earthAngle = KeplerOrbit.projectedPositionPolar(PlanetData.PlanetMotions.earth, time)
+
+    let planetsToRender = [#pluto, #uranus, #neptune, #saturn, #jupiter, #mars, #venus, #mercury]
+    let planetSvgs = Array.mapi((i, planet) => {
+      open! KeplerOrbit
+      let motion = PlanetData.planetMotion(planet)
+      let trueProjectedPosition = projectedPositionPolar(motion, time)
+      let renderedPosition = LocalConformal.locallyConformalMap(
+        earthAngle,
+        {r: 45.0, theta: earthAngle.theta},
+        trueProjectedPosition,
+        Belt.Int.toFloat(100 - 10 * i),
+      )
+      <Planet
+        radius={renderedPosition.r}
+        theta={renderedPosition.theta}
+        key={(planet :> string)}
+        id={(planet :> string)}
+      />
+    }, planetsToRender)
+
     <Svg width={pct(100.)} height={pct(100.)} viewBox={"-130 -130 260 260"}>
-      <Planet radius={100.} theta={marsAngle} id="mars" />
-      <Earth radius={80.} theta={earthAngle} id="earth" angles={angles(time)} />
-      <Planet radius={60.} theta={venusAngle} id="venus" />
-      <Planet radius={40.} theta={mercuryAngle} id="mercury" />
+      <Earth radius={45.0} theta={earthAngle.theta} id="earth" angles={angles(time)} />
+      {React.array(planetSvgs)}
       <Planet radius={0.} theta={0.} id="sol" />
     </Svg>
   }

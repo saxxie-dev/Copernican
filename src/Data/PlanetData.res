@@ -89,6 +89,32 @@ module PlanetMotions = {
   }
 }
 
+type planetName = [
+  | #mercury
+  | #venus
+  | #earth
+  | #mars
+  | #jupiter
+  | #saturn
+  | #uranus
+  | #neptune
+  | #pluto
+]
+
+let planetMotion = (planet: planetName): KeplerOrbit.orbitSpec => {
+  switch planet {
+  | #mercury => PlanetMotions.mercury
+  | #venus => PlanetMotions.venus
+  | #earth => PlanetMotions.earth
+  | #mars => PlanetMotions.mars
+  | #jupiter => PlanetMotions.jupiter
+  | #saturn => PlanetMotions.saturn
+  | #uranus => PlanetMotions.uranus
+  | #neptune => PlanetMotions.neptune
+  | #pluto => PlanetMotions.pluto
+  }
+}
+
 let planets: array<planetSpec> = [
   {
     name: "Sun",
